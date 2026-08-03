@@ -13,10 +13,10 @@ Two containers, from one image:
 
 | Container | Bots inside | State it owns |
 | --- | --- | --- |
-| `kenopsia-cc` | C.C, SUZAKU, Voice Bot | `data/`, `Virtual Pet/data/`, `Voice Bot/data/` |
+| `kenopsia-cc` | C.C, SUZAKU, SHIRLEY | `data/`, `Virtual Pet/data/`, `Voice Bot/data/` |
 | `kenopsia-lelouch` | LELOUCH | `roblox-verify/data/` |
 
-Three bots share one container on purpose. C.C, SUZAKU and the Voice Bot all
+Three bots share one container on purpose. C.C, SUZAKU and SHIRLEY all
 spend and earn from the same coin wallet in `data/kenopsia.json`, each keeping
 it in memory and writing it back a few seconds later. Split across two
 processes, whichever writes last wins and the other one's coins disappear.
