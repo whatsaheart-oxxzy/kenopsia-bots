@@ -6,12 +6,15 @@ const moderation = require('../lib/kenopsia/moderation');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('report')
-    .setDescription('Report someone to the staff. Nobody else sees this.')
+    .setDescription('Tell the staff something. Nobody else sees this.')
     .setDMPermission(false)
-    .addUserOption((o) => o.setName('user').setDescription('Who').setRequired(true))
+    // Optional on purpose. Not everything worth reporting is a person: a broken
+    // command, a missing role, or an appeal against your own warning all arrive
+    // through here, and there is nobody to name in any of them.
     .addStringOption((o) =>
       o.setName('reason').setDescription('What happened').setRequired(true).setMaxLength(500),
     )
+    .addUserOption((o) => o.setName('user').setDescription('Who it is about, if it is about someone'))
     .addStringOption((o) =>
       o.setName('link').setDescription('Link to the message, if you have one').setMaxLength(200),
     ),
@@ -21,12 +24,9 @@ module.exports = {
     const reason = interaction.options.getString('reason');
     const link = interaction.options.getString('link');
 
-    if (accused.id === interaction.user.id) {
-      return interaction.reply({ content: 'You cannot report yourself.', ephemeral: true });
-    }
-    if (accused.bot) {
+    if (accused && accused.id === interaction.user.id) {
       return interaction.reply({
-        content: 'For bot problems use the support channel instead.',
+        content: 'Leave the user field empty if the report is about your own case.',
         ephemeral: true,
       });
     }

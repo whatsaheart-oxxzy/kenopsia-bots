@@ -8,6 +8,8 @@ const store = require('./lib/store');
 const notify = require('./lib/notify');
 const wallet = require('./lib/wallet');
 const { lockToGuild } = require('../lib/guild-lock');
+const { isGuardedChannel } = require('../lib/kenopsia/command-only');
+const { isRoom: isArgueRoom } = require('../lib/kenopsia/argue');
 
 // Daily ceilings, so a pet cannot be maxed out by spamming the chat.
 const CAP_HAPPINESS = 20;
@@ -157,6 +159,11 @@ function startPetBot(token) {
 
   client.on(Events.MessageCreate, (message) => {
     if (!message.guild || message.author.bot || !lock.isAllowed(message.guildId)) return;
+    // Suzaku is a separate Discord client and sees the message independently of
+    // C.C's support guard, so it has to make the same call itself. Otherwise a
+    // channel where everything is deleted becomes the quietest place to farm
+    // pet happiness and xp.
+    if (isGuardedChannel(message.channel) || isArgueRoom(message.guildId, message.channelId)) return;
     try {
       onChat(message.guildId, message.author.id);
     } catch (err) {

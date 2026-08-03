@@ -54,14 +54,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 // In the marketplace the Roblox name is the whole point of verifying, so it is
-// shown under a trade post. One line, once per member per ten minutes.
+// shown under a trade post. Same in looking-for-play, where people are trying to
+// find each other in game. Those two channels are exactly what /verify promises
+// in roblox-verify/commands/verify.js — nowhere else.
+// One line, once per member per ten minutes, per channel.
+const SHOW_IN = new Set(['marketplace', 'looking-for-play']);
 const lastShown = new Map();
 
 client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot || message.channel.name !== 'marketplace') return;
+  if (message.author.bot || !SHOW_IN.has(message.channel.name)) return;
   if (!lock.isAllowed(message.guildId)) return;
 
-  const key = `${message.guildId}:${message.author.id}`;
+  // Keyed per channel, so posting a trade and then looking for people does not
+  // swallow the second line.
+  const key = `${message.guildId}:${message.channelId}:${message.author.id}`;
   if (Date.now() - (lastShown.get(key) ?? 0) < 10 * 60_000) return;
 
   const link = store.getLink(message.guildId, message.author.id);

@@ -93,7 +93,7 @@ Re-run `npm run deploy` whenever a command's name, description or options change
 
 `npm start` keeps the bots online only while this PC is. To host them on a
 server so they stay green permanently, see **[DEPLOY.md](DEPLOY.md)** — two
-Docker containers on a small Hetzner VM. C.C, SUZAKU and the Voice Bot share
+Docker containers on a small Ubuntu VM. C.C, SUZAKU and the Voice Bot share
 one container because they share one coin wallet; LELOUCH gets its own.
 
 ## Notes

@@ -1,7 +1,11 @@
-# Running the bots 24/7 on a Hetzner server
+# Running the bots 24/7 on a rented server
 
 Right now the bots are online only while your PC is on. This moves them to a
 small Linux server so they stay green when your PC sleeps.
+
+Written for an **IONOS VPS**, but nothing here is specific to that host — any
+Ubuntu server with root access and full virtualisation (KVM) works the same way,
+including Hetzner, UpCloud and dogado.
 
 ## What runs where
 
@@ -19,8 +23,8 @@ processes, whichever writes last wins and the other one's coins disappear.
 LELOUCH shares nothing with them, so it runs on its own and can be restarted
 without touching the economy.
 
-Cost: a Hetzner CX22 is about 4 EUR a month and is far more machine than four
-Discord bots need.
+The four bots together need roughly 700 MB of RAM. Anything from 2 GB up is
+comfortable; on a 1 GB machine add swap first (see the end of section 3).
 
 ---
 
@@ -66,29 +70,61 @@ git remote add origin https://github.com/YOURNAME/kenopsia-bots.git
 git push -u origin main
 ```
 
-## 2. Create the server
+## 2. Prepare the server
 
-At console.hetzner.com:
+In the IONOS Cloud Panel, under **Servers & Cloud**:
 
-1. New project, then **Add Server**.
-2. Location: Nuremberg or Falkenstein.
-3. Image: **Ubuntu 24.04**.
-4. Type: **CX22** (shared vCPU, x86).
-5. SSH key: add your public key. If you do not have one, run `ssh-keygen -t ed25519`
-   in PowerShell and paste `C:\Users\Asus\.ssh\id_ed25519.pub`. Use a key, not
-   a password — a password-login server on a public IP gets brute-forced within
-   hours.
-6. Firewall: inbound **SSH (22) only**. The bots make outbound connections to
-   Discord and need no inbound ports at all.
-7. Create, and note the IP address.
+1. Image: **Ubuntu 24.04**. If the server was created with a different image,
+   reinstall it now — it is far easier than fighting a distribution you did not
+   want. Nothing is on the machine yet.
+2. Note the **IP address** and the **root password**. IONOS shows both in the
+   panel; the password may also arrive by mail.
+3. Firewall policy: allow **inbound SSH (22) only**. IONOS applies its own
+   firewall in front of the machine, so a rule you set inside Ubuntu is not
+   enough on its own. The bots only make outgoing connections to Discord and
+   need no inbound ports beyond SSH.
+
+Do not book managed hosting, Plesk, or a backup add-on. Docker replaces the
+control panel, and the backup at the end of this file costs nothing.
 
 ## 3. Set the server up
 
-Log in as root once:
+Log in as root with the password from the welcome mail:
 
 ```bash
 ssh root@YOUR_SERVER_IP
 ```
+
+**Put your SSH key on it and turn the password login off.** A server with a
+public IP and password login gets brute-forced within hours — this is not
+optional. From PowerShell on your PC:
+
+```powershell
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh root@YOUR_SERVER_IP "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+```
+
+Open a **second** PowerShell window and confirm `ssh root@YOUR_SERVER_IP` now
+gets you in without asking for the password. Only once that works, disable
+password login on the server:
+
+```bash
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+systemctl restart ssh
+```
+
+Keep the first window open until you have tested the new one. If you lock
+yourself out, dogado's console in the customer panel is the way back in.
+
+Then set up the firewall. The bots only make outgoing connections to Discord
+and need no incoming ports at all beyond SSH:
+
+```bash
+ufw allow OpenSSH
+ufw --force enable
+```
+
+dogado also has IP Access Rules in the control panel. Either is enough; doing
+both does no harm.
 
 Create a normal user to run the bots. Docker containers running as root write
 root-owned files into your data folders, which becomes annoying the first time
@@ -118,6 +154,20 @@ Log out and back in as the new user:
 exit
 ssh deploy@YOUR_SERVER_IP
 ```
+
+**Only if the machine has 1 GB of RAM.** Check with `free -m`. The bots need
+about 700 MB and the Docker build is the peak; on 1 GB, give the kernel
+somewhere to spill to rather than have it kill a bot at the worst moment:
+
+```bash
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+With 2 GB or more, skip this.
 
 ## 4. Get the code and the tokens onto it
 
