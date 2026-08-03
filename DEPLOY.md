@@ -62,13 +62,17 @@ ignore rules.
 git commit -m "Kenopsia bots, ready to deploy"
 ```
 
-Then make a **private** repository at github.com/new — private, not public,
-because the code names your server and roles — and push:
+Then make a **private** repository — private, not public, because the code names
+your server and roles — and push:
 
 ```powershell
-git remote add origin https://github.com/YOURNAME/kenopsia-bots.git
-git push -u origin main
+gh repo create kenopsia-bots --private --source=. --remote=origin --push
 ```
+
+**This step is done.** The repository is
+[whatsaheart-oxxzy/kenopsia-bots](https://github.com/whatsaheart-oxxzy/kenopsia-bots),
+private, with the Anthropic key rotated and `.envt.txt` deleted. It is written
+out here so the whole path is on record, not because it is still open.
 
 ## 2. Prepare the server
 
@@ -171,8 +175,26 @@ With 2 GB or more, skip this.
 
 ## 4. Get the code and the tokens onto it
 
+The repository is private, so the server has to prove who it is before it may
+clone. The safest way is a **deploy key**: an SSH key that lives only on this
+server and may only read this one repository. Even if the server were taken
+over, that key opens nothing else.
+
+On the server:
+
 ```bash
-git clone https://github.com/YOURNAME/kenopsia-bots.git
+ssh-keygen -t ed25519 -f ~/.ssh/github -N ""
+cat ~/.ssh/github.pub
+printf 'Host github.com\n  IdentityFile ~/.ssh/github\n  IdentitiesOnly yes\n' >> ~/.ssh/config
+```
+
+Copy the printed line. Either paste it at
+`https://github.com/whatsaheart-oxxzy/kenopsia-bots/settings/keys` → **Add deploy
+key**, title `ionos`, **write access off** — or paste it to me and I add it from
+here. Then:
+
+```bash
+git clone git@github.com:whatsaheart-oxxzy/kenopsia-bots.git
 cd kenopsia-bots
 mkdir -p data "Virtual Pet/data" "Voice Bot/data" roblox-verify/data
 cp .env.deploy.example .env
