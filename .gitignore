@@ -1,0 +1,13 @@
+node_modules/
+
+# Secrets. `.env` and `data` have no slash, so they match at every depth —
+# `Virtual Pet/.env`, `Voice Bot/data/` and so on are covered too.
+.env
+.env.*
+!.env.example
+!.env.deploy.example
+.envt.txt
+
+# Bot state: coins, levels, pets, voice time, Roblox links. Never committed —
+# the server's copy is the real one. See DEPLOY.md for backups.
+data/

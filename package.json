@@ -1,0 +1,26 @@
+{
+  "name": "my-discord-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:lelouch": "node roblox-verify/index.js",
+    "deploy": "node deploy-commands.js",
+    "deploy:pet": "node \"Virtual Pet/deploy-commands.js\"",
+    "deploy:voice": "node \"Voice Bot/deploy-commands.js\"",
+    "deploy:verify": "node roblox-verify/deploy-commands.js",
+    "deploy:all": "npm run deploy && npm run deploy:pet && npm run deploy:voice && npm run deploy:verify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "discord.js": "^14.15.3"
+  }
+}

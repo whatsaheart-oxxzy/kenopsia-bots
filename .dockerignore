@@ -1,0 +1,22 @@
+# Rebuilt inside the image by `npm ci`, and a Windows node_modules would not
+# work on Linux anyway.
+node_modules/
+
+# No secret goes into an image. Tokens arrive as environment variables, which
+# docker-compose reads from the server's .env at start time.
+.env
+.env.*
+!.env.example
+!.env.deploy.example
+.envt.txt
+
+# State lives on the server and is bind-mounted in. Baking a copy into the
+# image would silently overwrite nothing, but it would leak member data into it.
+data/
+
+.git/
+.gitignore
+*.md
+Dockerfile
+.dockerignore
+docker-compose.yml

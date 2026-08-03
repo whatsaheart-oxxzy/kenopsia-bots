@@ -1,0 +1,10 @@
+# Windows checkouts use CRLF, Linux uses LF. Git normalises text files to LF
+# inside the repository, so the server gets LF either way.
+* text=auto
+
+# These are read by Linux tooling and must be LF in the working tree too,
+# on every machine. A stray carriage return in a Dockerfile or a compose file
+# produces errors that make no sense when you read them.
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+*.sh text eol=lf

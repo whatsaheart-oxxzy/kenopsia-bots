@@ -1,0 +1,62 @@
+# Two services, not four, and that is deliberate.
+#
+# C.C, SUZAKU and the Voice Bot all read and write the same coin wallet
+# (data/kenopsia.json, through lib/kenopsia/store.js and economy.js). Each of
+# them keeps that file in memory and writes it back on a 3 second timer, so two
+# processes touching it would overwrite each other's coins. They stay in one
+# process — see the comment at Virtual Pet/client.js:113.
+#
+# LELOUCH shares no state with them at all. Its only import from the parent
+# folder is lib/guild-lock.js, and it owns roblox-verify/data/verified.json,
+# so it gets its own container and can be restarted on its own.
+
+services:
+  cc:
+    build: .
+    image: kenopsia-bots
+    container_name: kenopsia-cc
+    command: ["node", "index.js"]
+    env_file: .env
+    restart: unless-stopped
+    # Matches the `deploy` user created in DEPLOY.md. If `id -u` on the server
+    # prints something other than 1000, change both numbers to match, otherwise
+    # the container cannot write to the mounted state directories.
+    user: "1000:1000"
+    volumes:
+      # Coins, levels, quests, weekly leaderboard.
+      - type: bind
+        source: ./data
+        target: /app/data
+      # Pets and inventory.
+      - type: bind
+        source: ./Virtual Pet/data
+        target: /app/Virtual Pet/data
+      # Voice time and voice events.
+      - type: bind
+        source: ./Voice Bot/data
+        target: /app/Voice Bot/data
+    # A chatty bot on a small VPS will fill the disk with logs otherwise.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  lelouch:
+    build: .
+    image: kenopsia-bots
+    container_name: kenopsia-lelouch
+    command: ["node", "roblox-verify/index.js"]
+    env_file: .env
+    restart: unless-stopped
+    user: "1000:1000"
+    volumes:
+      # Discord-to-Roblox account links.
+      - type: bind
+        source: ./roblox-verify/data
+        target: /app/roblox-verify/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
