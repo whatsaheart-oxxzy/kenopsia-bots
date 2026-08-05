@@ -26,6 +26,8 @@ No third-party bot, no paywall — everything runs in this process.
 | `/mod timeout user: minutes: [reason:]` | Times a member out. |
 | `/mod warnings user:` | Lists a member's warnings. |
 | `/mod clear user:` | Clears them. |
+| `/mod purge count: [user:] [include_pinned:]` | Deletes up to 1000 recent messages here, optionally only one person's. Pinned messages are kept unless you say otherwise. Discord will not bulk delete anything older than 14 days — it says how many it had to skip. |
+| `/mod wipe confirm:` | Deletes the **entire** history of a channel, however old. Administrator only, and you must type the channel name to confirm. |
 | `/kenopsia setup` | Renames the server and creates every role, category, channel and AutoMod rule, each with its opening post. |
 | `/kenopsia refresh` | Rewrites the opening posts after the text in `content.js` changed. |
 | `/kenopsia cleanup` | Deletes the old Project ECHO structure. |
@@ -79,6 +81,14 @@ timer is re-checked every minute, so a bot restart cannot leave anyone stuck.
 **Voice**: joining "Create a room" builds a private voice channel for that
 member and deletes it when the last person leaves. Time in the AFK channel does
 not earn coins.
+
+**Deleting history**: `/mod purge` removes recent messages. `/mod wipe` removes
+everything, at any age — it does that by copying the channel (name, topic,
+permissions, slowmode, category, position) and deleting the original, because
+Discord flatly refuses to bulk delete messages older than 14 days. The channel
+keeps its name and settings but gets a new id, so the pinned leaderboard message
+and Tamem's per-channel switch are moved across automatically. `mod-log` is
+refused: a log a moderator can quietly erase is not a log.
 
 **Moderation**: four AutoMod rules (spam, language, mention raids, real-money
 keywords in the marketplace), plus warn/timeout/report, all logged to `mod-log`.
