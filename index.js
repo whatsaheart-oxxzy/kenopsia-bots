@@ -71,6 +71,16 @@ if (process.env.VOICE_TOKEN) {
   console.log('Voice bot skipped — no VOICE_TOKEN in "Voice Bot/.env".');
 }
 
+// KALLEN, the shop. Same arrangement again: its own application, this process,
+// because every price it charges comes out of the one shared wallet.
+const shopEnv = path.join(__dirname, 'Shop Bot', '.env');
+if (fs.existsSync(shopEnv)) process.loadEnvFile(shopEnv);
+if (process.env.SHOP_TOKEN) {
+  require('./Shop Bot/client').startShopBot(process.env.SHOP_TOKEN);
+} else {
+  console.log('Shop bot skipped — no SHOP_TOKEN in "Shop Bot/.env".');
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   if (!lock.isAllowed(interaction.guildId)) return;

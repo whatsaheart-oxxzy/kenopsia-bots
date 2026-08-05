@@ -8,7 +8,7 @@ const wallet = require('../lib/wallet');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('buy')
+    .setName('pet-buy')
     .setDescription('Buy an item from the pet shop')
     .setDMPermission(false)
     .addStringOption((o) =>
@@ -44,7 +44,7 @@ module.exports = {
 
     store.addItem(interaction.guildId, interaction.user.id, id, amount);
     await interaction.reply(
-      `Bought ${amount} ${item.label}${amount > 1 ? 's' : ''} for ${total} coins. Use it with \`/inventory\`. ${wallet.balance(interaction.guildId, interaction.user.id)} coins left.`,
+      `Bought ${amount} ${item.label}${amount > 1 ? 's' : ''} for ${total} coins. Use it with \`/pet-inventory\`. ${wallet.balance(interaction.guildId, interaction.user.id)} coins left.`,
     );
   },
 };

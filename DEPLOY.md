@@ -13,17 +13,18 @@ Two containers, from one image:
 
 | Container | Bots inside | State it owns |
 | --- | --- | --- |
-| `kenopsia-cc` | C.C, SUZAKU, SHIRLEY | `data/`, `Virtual Pet/data/`, `Voice Bot/data/` |
+| `kenopsia-cc` | C.C, SUZAKU, SHIRLEY, KALLEN | `data/`, `Virtual Pet/data/`, `Voice Bot/data/`, `Shop Bot/data/` |
 | `kenopsia-lelouch` | LELOUCH | `roblox-verify/data/` |
 
-Three bots share one container on purpose. C.C, SUZAKU and SHIRLEY all
+Four bots share one container on purpose. C.C, SUZAKU, SHIRLEY and KALLEN all
 spend and earn from the same coin wallet in `data/kenopsia.json`, each keeping
 it in memory and writing it back a few seconds later. Split across two
 processes, whichever writes last wins and the other one's coins disappear.
-LELOUCH shares nothing with them, so it runs on its own and can be restarted
-without touching the economy.
+KALLEN is the one that would hurt most — it is the shop, so it is the one
+actually taking coins out. LELOUCH shares nothing with them, so it runs on its
+own and can be restarted without touching the economy.
 
-The four bots together need roughly 700 MB of RAM. Anything from 2 GB up is
+The five bots together need roughly 850 MB of RAM. Anything from 2 GB up is
 comfortable; on a 1 GB machine add swap first (see the end of section 3).
 
 ---
@@ -196,12 +197,12 @@ here. Then:
 ```bash
 git clone git@github.com:whatsaheart-oxxzy/kenopsia-bots.git
 cd kenopsia-bots
-mkdir -p data "Virtual Pet/data" "Voice Bot/data" roblox-verify/data
+mkdir -p data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" roblox-verify/data
 cp .env.deploy.example .env
 nano .env
 ```
 
-Fill in all nine values. They are the same tokens your four `.env` files hold
+Fill in all twelve values. They are the same tokens your five `.env` files hold
 on your PC, gathered into one file — the container has no `.env` files inside
 it, so docker-compose passes these in as real environment variables instead.
 Save with `Ctrl+O`, `Enter`, `Ctrl+X`.
@@ -221,8 +222,9 @@ scp "Virtual Pet/data/pets.json" "deploy@YOUR_SERVER_IP:'kenopsia-bots/Virtual P
 scp roblox-verify/data/verified.json deploy@YOUR_SERVER_IP:kenopsia-bots/roblox-verify/data/
 ```
 
-`Voice Bot/data/voice.json` does not exist yet — the voice bot has not written
-any statistics. It will be created on the server on its own.
+`Voice Bot/data/voice.json` and `Shop Bot/data/shop.json` do not exist yet — the
+voice bot has not written any statistics and nobody has bought anything. Both
+are created on the server on their own.
 
 Skip this whole step if you would rather start the economy from zero.
 
@@ -263,10 +265,11 @@ docker compose logs -f
 ```
 
 You want to see `Logged in as ...` for C.C, `Pet bot online as ...` for SUZAKU,
-the voice bot's own ready line, and LELOUCH's in the second container. `Ctrl+C`
-leaves the log view without stopping anything.
+`Voice bot online as ...` for SHIRLEY, `Shop bot online as ...` for KALLEN, and
+LELOUCH's in the second container. `Ctrl+C` leaves the log view without stopping
+anything.
 
-In Discord all four should now be green. Test one command from each bot —
+In Discord all five should now be green. Test one command from each bot —
 `/profile`, `/pet`, `/voice`, `/verify` — before you consider it done.
 
 `restart: unless-stopped` means Docker starts them again after a crash and
@@ -297,7 +300,7 @@ docker compose restart lelouch
 docker compose restart cc
 ```
 
-Restarting `cc` restarts SUZAKU and the Voice Bot with it. That is the trade
+Restarting `cc` restarts SUZAKU, SHIRLEY and KALLEN with it. That is the trade
 for a wallet that cannot be corrupted.
 
 **Read the logs:**
@@ -317,9 +320,11 @@ scp -r deploy@YOUR_SERVER_IP:kenopsia-bots/data ./backup-data
 
 Worth doing before any big change, and worth setting a monthly reminder for.
 
-**Turn a bot off:** clear its token in `.env` and restart. An empty `PET_TOKEN`
-or `VOICE_TOKEN` makes `index.js` skip that bot and log that it did. For
-LELOUCH, `docker compose stop lelouch`.
+**Turn a bot off:** clear its token in `.env` and restart. An empty `PET_TOKEN`,
+`VOICE_TOKEN` or `SHOP_TOKEN` makes `index.js` skip that bot and log that it
+did. Clearing `SHOP_TOKEN` is the quickest way to close the shop without
+touching anyone's coins — held requests stay held and resume when it is back.
+For LELOUCH, `docker compose stop lelouch`.
 
 ---
 
@@ -334,7 +339,7 @@ trouble, so a genuinely stuck bot is rare.
 number in both halves of `user: "1000:1000"`, then:
 
 ```bash
-sudo chown -R $(id -u):$(id -g) data "Virtual Pet/data" "Voice Bot/data" roblox-verify/data
+sudo chown -R $(id -u):$(id -g) data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" roblox-verify/data
 docker compose up -d
 ```
 

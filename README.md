@@ -10,7 +10,8 @@ No third-party bot, no paywall — everything runs in this process.
 
 | Command | What it does |
 | --- | --- |
-| `/profile [user]` | Level, xp bar, coins, weekly rank, voice time, invites. |
+| `/profile [user]` | Coins, weekly rank, voice time, level — drawn on whatever card they bought. |
+| `/shop`, `/buy`, `/inventory`, `/balance`, `/request` | KALLEN, the shop. See **[Shop Bot/README.md](Shop%20Bot/README.md)**. |
 | `/quests` | Daily and weekly progress with bars. Pays out anything already finished. |
 | `/leaderboard [alltime]` | This week's top ten, or all-time totals. |
 | `/color` | Pick a name colour. Unlocks at level 20. Ephemeral, so it never clutters a channel. |
@@ -43,9 +44,17 @@ curve. Roles at 5 (Active Member), 10 (Regular), 20 (Enthusiast), 35 (Veteran),
 50 (Legend). Level 10 opens the marketplace and personal voice rooms, level 20
 name colours and bot-playground, level 35 the Inner Circle voice channel.
 
-**Coins** are the weekly score: 2 per message (max 100/day), 5 per 10 minutes in
-voice, 1 per reaction received (max 20/day), 10 when a moderator reacts to your
-message, 30 when someone joins through your invite, plus quest rewards.
+**Coins** are the weekly score and the only currency: 2 per message (max
+100/day), 5 per 10 minutes in voice, 1 per reaction received (max 20/day), 10
+when a moderator reacts to your message, 30 when someone joins through your
+invite, plus quest rewards. Voice time has never been a separate currency — it
+pays into this same balance, which is why the shop has one price per item.
+
+**The shop** is KALLEN (`/shop`). It sells no roles and nothing Discord alone
+can grant; Robux, Nitro and in-game items go through an approval queue that
+holds the coins until the owner has actually sent them. Prices are anchored to
+real money at roughly 125 coins per Robux. The pet shop (`/pet-shop`) is the one
+shop that stayed separate.
 
 **Quests** are counters, not buttons. Five daily quests reset at 00:00 UTC, four
 weekly ones on Monday, and the bot pays the moment a target is reached — nobody
@@ -93,8 +102,9 @@ Re-run `npm run deploy` whenever a command's name, description or options change
 
 `npm start` keeps the bots online only while this PC is. To host them on a
 server so they stay green permanently, see **[DEPLOY.md](DEPLOY.md)** — two
-Docker containers on a small Ubuntu VM. C.C, SUZAKU and the Voice Bot share
-one container because they share one coin wallet; LELOUCH gets its own.
+Docker containers on a small Ubuntu VM. C.C, SUZAKU, SHIRLEY (voice) and KALLEN
+(shop) share one container because they share one coin wallet; LELOUCH gets its
+own.
 
 ## Notes
 

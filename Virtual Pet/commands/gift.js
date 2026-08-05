@@ -7,8 +7,8 @@ const guard = require('../lib/guard');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('gift')
-    .setDescription('Give one of your items to another member')
+    .setName('pet-gift')
+    .setDescription('Give one of your pet items to another member')
     .setDMPermission(false)
     .addUserOption((o) => o.setName('user').setDescription('Who').setRequired(true))
     .addStringOption((o) =>

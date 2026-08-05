@@ -87,7 +87,10 @@ module.exports = {
 async function create(interaction) {
   if (!canHost(interaction.member)) {
     return interaction.reply({
-      content: 'You need the **Event Host** role to create events. It is in `/voice-shop`.',
+      // The shop stopped selling roles. Anyone who already bought Event Host
+      // kept it; everyone else buys a one-off event slot from KALLEN instead.
+      content:
+        'You need the **Event Host** role to create events here, and that role is no longer sold. You can buy a single official event instead: `/buy item:event-slot`, then `/inventory event`.',
       ephemeral: true,
     });
   }

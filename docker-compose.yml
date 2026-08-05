@@ -1,6 +1,6 @@
 # Two services, not four, and that is deliberate.
 #
-# C.C, SUZAKU and SHIRLEY (the voice bot) all read and write the same coin wallet
+# C.C, SUZAKU, SHIRLEY (voice) and KALLEN (shop) all read and write the same coin wallet
 # (data/kenopsia.json, through lib/kenopsia/store.js and economy.js). Each of
 # them keeps that file in memory and writes it back on a 3 second timer, so two
 # processes touching it would overwrite each other's coins. They stay in one
@@ -35,6 +35,10 @@ services:
       - type: bind
         source: ./Voice Bot/data
         target: /app/Voice Bot/data
+      # Shop inventory, the request queue and price overrides.
+      - type: bind
+        source: ./Shop Bot/data
+        target: /app/Shop Bot/data
     # A chatty bot on a small VPS will fill the disk with logs otherwise.
     logging:
       driver: json-file

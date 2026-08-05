@@ -19,7 +19,7 @@ next start. Without a token C.C simply logs that the pet bot was skipped.
 | `/train` | Free. 10 xp for 10 energy, once an hour. |
 | `/rename name:` | New name. |
 | `/battle user:` then `/accept` | Three rounds, level and happiness tilt the odds. |
-| `/shop`, `/buy item:`, `/inventory [use:]`, `/gift user: item:` | Eight items, bought with Kenopsia coins. |
+| `/pet-shop`, `/pet-buy item:`, `/pet-inventory [use:]`, `/pet-gift user: item:` | Eight items, bought with Kenopsia coins. The pet shop is the only shop separate from KALLEN's `/shop`. |
 | `/stats user:`, `/pets`, `/pet-leaderboard [by:]`, `/evolutions [type:]` | Looking around. |
 
 Commands that change something have to be run in `#bot-commands`. The read-only

@@ -9,7 +9,8 @@
     "deploy:pet": "node \"Virtual Pet/deploy-commands.js\"",
     "deploy:voice": "node \"Voice Bot/deploy-commands.js\"",
     "deploy:verify": "node roblox-verify/deploy-commands.js",
-    "deploy:all": "npm run deploy && npm run deploy:pet && npm run deploy:voice && npm run deploy:verify",
+    "deploy:shop": "node \"Shop Bot/deploy-commands.js\"",
+    "deploy:all": "npm run deploy && npm run deploy:pet && npm run deploy:voice && npm run deploy:verify && npm run deploy:shop",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

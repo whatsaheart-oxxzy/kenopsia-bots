@@ -9,7 +9,7 @@ const pets = require('../lib/pets');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('inventory')
+    .setName('pet-inventory')
     .setDescription('Your items, and use one on your pet')
     .setDMPermission(false)
     .addStringOption((o) =>
@@ -37,8 +37,8 @@ module.exports = {
 
       return interaction.reply({
         content: lines.length
-          ? ['# Your items', '', ...lines, '', 'Use one with `/inventory use:<item>`.'].join('\n')
-          : 'Your bag is empty. `/shop` shows what there is.',
+          ? ['# Your items', '', ...lines, '', 'Use one with `/pet-inventory use:<item>`.'].join('\n')
+          : 'Your bag is empty. `/pet-shop` shows what there is.',
         ephemeral: true,
       });
     }

@@ -19,7 +19,10 @@ module.exports = {
     const record = store.member(interaction.guildId, interaction.user.id);
     if (!(record.emojiSlots > 0)) {
       return interaction.reply({
-        content: 'You have no emoji slot. Buy one with `/voice-shop buy:emoji-slot`.',
+        // Slots bought in the old voice shop still live in the voice store and
+        // are spent here. New ones are KALLEN's, and are spent with
+        // /inventory emoji instead.
+        content: 'You have no emoji slot left here. Emoji slots are in the main shop now: `/buy item:emoji-slot`, then upload with `/inventory emoji`.',
         ephemeral: true,
       });
     }
