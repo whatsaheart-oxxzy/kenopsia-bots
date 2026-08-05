@@ -105,7 +105,13 @@ function startShopBot(token) {
     process.once(signal, () => store.flush());
   }
 
-  client.login(token);
+  // A rejected login is an unhandled rejection, and an unhandled rejection ends
+  // the process — with it C.C, SUZAKU, SHIRLEY and TAMEM. One bad token must
+  // never cost four bots.
+  client.login(token).catch((err) => {
+    console.error(`KALLEN could not log in: ${err.message}. Check SHOP_TOKEN. Everything else keeps running.`);
+  });
+
   return client;
 }
 

@@ -82,4 +82,12 @@ client.on(Events.MessageCreate, async (message) => {
     .catch(() => {});
 });
 
-client.login(token);
+// LELOUCH is alone in its container, so a bad token means there is nothing to
+// keep alive — but it should say so rather than print a stack trace.
+client.login(token).catch((err) => {
+  console.error(`LELOUCH could not log in: ${err.message}`);
+  if (err.code === 'TokenInvalid') {
+    console.error('VERIFY_TOKEN is not a valid bot token. Check .env for a truncated value, stray quotes or a line break.');
+  }
+  process.exit(1);
+});

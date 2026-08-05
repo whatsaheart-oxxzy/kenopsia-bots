@@ -118,4 +118,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.login(token);
+// C.C is the process. If its own token is bad there is nothing to keep running,
+// so this one does exit — but it says why first, instead of a raw stack trace.
+client.login(token).catch((err) => {
+  console.error(`C.C could not log in: ${err.message}`);
+  if (err.code === 'TokenInvalid') {
+    console.error('DISCORD_TOKEN is not a valid bot token. Check .env for a truncated value, stray quotes or a line break.');
+  }
+  process.exit(1);
+});

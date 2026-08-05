@@ -196,7 +196,25 @@ function startTamemBot(token) {
     process.once(signal, () => db.close());
   }
 
-  client.login(token);
+  // login() returns a promise. A bad token rejects it, and an unhandled
+  // rejection takes the whole Node process down — which in this repo means C.C,
+  // SUZAKU, SHIRLEY and KALLEN all go offline because one chat bot had a typo
+  // in its token. The try/catch around startTamemBot() in index.js cannot see
+  // this: it is asynchronous. So it is caught here, where it happens.
+  client.login(token).catch((err) => {
+    console.error(
+      [
+        `Tamem could not log in: ${err.message}`,
+        err.code === 'TokenInvalid'
+          ? 'TAMEM_TOKEN is not a valid bot token. Check the server .env for a truncated value, stray quotes, a line break, or the application ID pasted in by mistake. Reset the token in the developer portal if in doubt.'
+          : '',
+        'Everything else keeps running.',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    );
+  });
+
   return client;
 }
 

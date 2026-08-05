@@ -205,7 +205,12 @@ function startPetBot(token) {
     process.once(signal, () => store.flush());
   }
 
-  client.login(token);
+  // See the note in "Tamem/client.js": an unhandled login rejection would end
+  // the process and take every bot sharing it offline.
+  client.login(token).catch((err) => {
+    console.error(`SUZAKU could not log in: ${err.message}. Check PET_TOKEN. Everything else keeps running.`);
+  });
+
   return client;
 }
 
