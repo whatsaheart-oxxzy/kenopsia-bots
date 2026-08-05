@@ -19,9 +19,14 @@ only sells pet things.
 
 Two rules the catalogue is built on, both worth keeping when you add items:
 
-**No roles.** KALLEN hands out nothing that lives in the role list. Roles are
-permissions and status, and the moment they are for sale the role list stops
-meaning anything. Anyone who bought a role from the old voice shop kept it.
+**No roles. No exceptions.** KALLEN hands out nothing that lives in the role
+list, because roles are permissions and standing, and a role list you can buy
+your way up stops meaning anything. Anyone who bought a role from the old voice
+shop kept it.
+
+Tamem access was briefly going to be the one exception. It is not: the owner
+grants it by hand with `/tamem allow`, because who may teach a bot that repeats
+what it is taught is a judgement about trust, not a purchase.
 
 **Nothing that cannot be handed over.** Discord's avatar decorations, profile
 effects, nickname bold/italic and custom statuses belong to Discord. No bot can
@@ -78,9 +83,10 @@ the paperwork, the owner makes the call.
 
 ## Rooms go quiet, purchases do not
 
-A private voice room is 500 coins — cheap enough to buy on day one, which is
-exactly why the channel is swept. Empty for two hours and it comes down, so the
-voice list does not fill with names nobody has clicked in weeks.
+A private voice room is 2,000 coins — cheap enough that plenty of people will
+own one, which is exactly why the channel is swept. Empty for two hours and it
+comes down, so the voice list does not fill with names nobody has clicked in
+weeks.
 
 **Only the channel is deleted.** The item stays in the member's inventory and
 `/inventory room` builds it again for nothing, as often as they like, at the

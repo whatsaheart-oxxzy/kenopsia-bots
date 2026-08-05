@@ -5,10 +5,13 @@
  * no second currency, so nothing has to be converted and nothing has to be
  * explained twice.
  *
- * Balance note: chatting is capped at 100 coins a day. Voice is deliberately
- * the better earner but not five times better, so the pet shop and the weekly
- * leaderboard stay meaningful. Base rate is 30 coins an hour, same as before,
- * and the multipliers stack on top.
+ * Balance note: chatting is capped at 400 coins a day (blueprint.js COINS), and
+ * voice at 200 below. Voice used to be the better earner of the two; since the
+ * chat cap went up it is not, and a very chatty member now out-earns a very
+ * quiet one who sits in calls all evening. Raise DAILY_CAP here if that is not
+ * what you want — the two numbers are meant to be read together.
+ *
+ * Base rate is 30 coins an hour and the multipliers stack on top.
  */
 
 const SECONDS_PER_COIN = 120; // 1 coin per 2 minutes at 1.0x

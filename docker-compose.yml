@@ -39,6 +39,10 @@ services:
       - type: bind
         source: ./Shop Bot/data
         target: /app/Shop Bot/data
+      # Tamem's word model. SQLite, so this is the .db plus its -wal and -shm.
+      - type: bind
+        source: ./Tamem/data
+        target: /app/Tamem/data
     # A chatty bot on a small VPS will fill the disk with logs otherwise.
     logging:
       driver: json-file

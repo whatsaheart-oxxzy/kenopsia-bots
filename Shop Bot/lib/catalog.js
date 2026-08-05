@@ -334,13 +334,13 @@ const ITEMS = {
   },
   // Cheap on purpose. This is the one item meant to be bought early rather than
   // saved up for, which is also why the channel is swept when it goes quiet —
-  // at this price people will make them freely, and the voice list still has to
+  // at this price a lot of people will own one, and the voice list still has to
   // stay readable.
   'voice-room': {
     category: 'server',
     kind: 'voice-room',
     label: 'Private voice room',
-    price: price(500),
+    price: price(2_000),
     days: null,
     giftable: true,
     text: 'Your own voice channel under VOICE. Rename it, move people in it, set how many can join. Goes quiet for a couple of hours and the channel comes down — the room stays yours, /inventory room builds it back free.',
@@ -354,6 +354,10 @@ const ITEMS = {
     giftable: false,
     text: 'Your own text channel that you control who sees. Never deleted automatically — what is said in it stays.',
   },
+  // Tamem access was briefly going to be sold here. It is not: the owner hands
+  // it out by hand with /tamem allow, because who may teach a bot that repeats
+  // what it is taught is a judgement call, not a purchase. So the no-roles rule
+  // below holds with no exceptions at all.
   'event-slot': {
     category: 'server',
     kind: 'event',

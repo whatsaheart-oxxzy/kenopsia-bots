@@ -13,19 +13,27 @@ Two containers, from one image:
 
 | Container | Bots inside | State it owns |
 | --- | --- | --- |
-| `kenopsia-cc` | C.C, SUZAKU, SHIRLEY, KALLEN | `data/`, `Virtual Pet/data/`, `Voice Bot/data/`, `Shop Bot/data/` |
+| `kenopsia-cc` | C.C, SUZAKU, SHIRLEY, KALLEN, TAMEM | `data/`, `Virtual Pet/data/`, `Voice Bot/data/`, `Shop Bot/data/`, `Tamem/data/` |
 | `kenopsia-lelouch` | LELOUCH | `roblox-verify/data/` |
 
-Four bots share one container on purpose. C.C, SUZAKU, SHIRLEY and KALLEN all
-spend and earn from the same coin wallet in `data/kenopsia.json`, each keeping
-it in memory and writing it back a few seconds later. Split across two
+Five bots share one container on purpose. C.C, SUZAKU, SHIRLEY, KALLEN and
+TAMEM all spend and earn from the same coin wallet in `data/kenopsia.json`, each
+keeping it in memory and writing it back a few seconds later. Split across two
 processes, whichever writes last wins and the other one's coins disappear.
 KALLEN is the one that would hurt most — it is the shop, so it is the one
 actually taking coins out. LELOUCH shares nothing with them, so it runs on its
 own and can be restarted without touching the economy.
 
-The five bots together need roughly 850 MB of RAM. Anything from 2 GB up is
-comfortable; on a 1 GB machine add swap first (see the end of section 3).
+The six bots together need roughly **1.0 GB** of RAM, which on a 2 GB machine
+leaves enough headroom for the Docker build and the OS but not a great deal
+more. **Tamem is the last bot this box will take.** If a seventh is ever wanted,
+add swap or a bigger machine first rather than finding out during a rebuild.
+
+Tamem is also the only bot that keeps its state in a database rather than in
+memory — `Tamem/data/tamem.db`, through Node's built-in `node:sqlite`. That is
+deliberate: a word model grows with every sentence anyone types, and holding it
+in RAM the way the other bots hold their JSON would be the thing that finally
+broke this server.
 
 ---
 
@@ -160,9 +168,10 @@ exit
 ssh deploy@YOUR_SERVER_IP
 ```
 
-**Only if the machine has 1 GB of RAM.** Check with `free -m`. The bots need
-about 700 MB and the Docker build is the peak; on 1 GB, give the kernel
-somewhere to spill to rather than have it kill a bot at the worst moment:
+**Swap.** Check with `free -m`. The six bots need about 1.0 GB and the Docker
+build is the peak, so on a 2 GB box this is now worth doing rather than optional
+— give the kernel somewhere to spill to instead of having it kill a bot at the
+worst moment. On 1 GB it is required:
 
 ```bash
 sudo fallocate -l 2G /swapfile
@@ -172,7 +181,7 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
 
-With 2 GB or more, skip this.
+With 4 GB or more you can skip it.
 
 ## 4. Get the code and the tokens onto it
 
@@ -197,12 +206,12 @@ here. Then:
 ```bash
 git clone git@github.com:whatsaheart-oxxzy/kenopsia-bots.git
 cd kenopsia-bots
-mkdir -p data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" roblox-verify/data
+mkdir -p data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" Tamem/data roblox-verify/data
 cp .env.deploy.example .env
 nano .env
 ```
 
-Fill in all twelve values. They are the same tokens your five `.env` files hold
+Fill in all fourteen values. They are the same tokens your six `.env` files hold
 on your PC, gathered into one file — the container has no `.env` files inside
 it, so docker-compose passes these in as real environment variables instead.
 Save with `Ctrl+O`, `Enter`, `Ctrl+X`.
@@ -265,11 +274,14 @@ docker compose logs -f
 ```
 
 You want to see `Logged in as ...` for C.C, `Pet bot online as ...` for SUZAKU,
-`Voice bot online as ...` for SHIRLEY, `Shop bot online as ...` for KALLEN, and
-LELOUCH's in the second container. `Ctrl+C` leaves the log view without stopping
-anything.
+`Voice bot online as ...` for SHIRLEY, `Shop bot online as ...` for KALLEN,
+`Tamem online as ...` for TAMEM, and LELOUCH's in the second container. `Ctrl+C`
+leaves the log view without stopping anything.
 
-In Discord all five should now be green. Test one command from each bot —
+Tamem's line also prints how many words it knows. On a fresh install that is
+zero, which is correct — it has not heard anything yet.
+
+In Discord all six should now be green. Test one command from each bot —
 `/profile`, `/pet`, `/voice`, `/verify` — before you consider it done.
 
 `restart: unless-stopped` means Docker starts them again after a crash and
@@ -300,7 +312,7 @@ docker compose restart lelouch
 docker compose restart cc
 ```
 
-Restarting `cc` restarts SUZAKU, SHIRLEY and KALLEN with it. That is the trade
+Restarting `cc` restarts SUZAKU, SHIRLEY, KALLEN and TAMEM with it. That is the trade
 for a wallet that cannot be corrupted.
 
 **Read the logs:**
@@ -321,10 +333,12 @@ scp -r deploy@YOUR_SERVER_IP:kenopsia-bots/data ./backup-data
 Worth doing before any big change, and worth setting a monthly reminder for.
 
 **Turn a bot off:** clear its token in `.env` and restart. An empty `PET_TOKEN`,
-`VOICE_TOKEN` or `SHOP_TOKEN` makes `index.js` skip that bot and log that it
-did. Clearing `SHOP_TOKEN` is the quickest way to close the shop without
-touching anyone's coins — held requests stay held and resume when it is back.
-For LELOUCH, `docker compose stop lelouch`.
+`VOICE_TOKEN`, `SHOP_TOKEN` or `TAMEM_TOKEN` makes `index.js` skip that bot and
+log that it did. Clearing `SHOP_TOKEN` is the quickest way to close the shop
+without touching anyone's coins — held requests stay held and resume when it is
+back. Clearing `TAMEM_TOKEN` is the quickest way to make Tamem stop talking
+without losing anything it has learned. For LELOUCH,
+`docker compose stop lelouch`.
 
 ---
 
@@ -339,7 +353,7 @@ trouble, so a genuinely stuck bot is rare.
 number in both halves of `user: "1000:1000"`, then:
 
 ```bash
-sudo chown -R $(id -u):$(id -g) data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" roblox-verify/data
+sudo chown -R $(id -u):$(id -g) data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" Tamem/data roblox-verify/data
 docker compose up -d
 ```
 

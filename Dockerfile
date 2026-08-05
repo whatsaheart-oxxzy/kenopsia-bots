@@ -22,7 +22,7 @@ COPY . .
 
 # The state directories are bind-mounted over at run time. Creating them here
 # means a first start on an empty server does not fail on a missing path.
-RUN mkdir -p data "Virtual Pet/data" "Voice Bot/data" roblox-verify/data
+RUN mkdir -p data "Virtual Pet/data" "Voice Bot/data" "Shop Bot/data" Tamem/data roblox-verify/data
 
 # Overridden per service in docker-compose.yml.
 CMD ["node", "index.js"]

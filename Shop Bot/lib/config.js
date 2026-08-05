@@ -49,9 +49,9 @@ const REQUEST_EXPIRY_MS = 7 * 86_400_000;
  * entitlement — it stays in the member's inventory and `/inventory room` builds
  * it again for nothing. Silence costs a channel, never a refund.
  *
- * Two hours rather than a day: the room only costs 500 coins, so people make
- * them freely and the voice list fills up fast. Rebuilding is free and instant,
- * so sweeping early costs the member nothing.
+ * Two hours rather than a day: at 2,000 coins plenty of people own a room, so
+ * the voice list fills up fast. Rebuilding is free and instant, so sweeping
+ * early costs the member nothing.
  *
  * Bought TEXT rooms are deliberately never swept. Deleting a text channel
  * destroys everything anybody ever said in it, and there is no undo.

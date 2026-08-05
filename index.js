@@ -81,6 +81,23 @@ if (process.env.SHOP_TOKEN) {
   console.log('Shop bot skipped — no SHOP_TOKEN in "Shop Bot/.env".');
 }
 
+// TAMEM, the Markov chat bot. Same process again — it pays coins for talking to
+// it. Wrapped, unlike the others, because it is the only bot here that opens a
+// database at startup: if node:sqlite or the file were unavailable this would
+// throw, and taking C.C down with it would stop the whole server's economy over
+// a chat toy.
+const tamemEnv = path.join(__dirname, 'Tamem', '.env');
+if (fs.existsSync(tamemEnv)) process.loadEnvFile(tamemEnv);
+if (process.env.TAMEM_TOKEN) {
+  try {
+    require('./Tamem/client').startTamemBot(process.env.TAMEM_TOKEN);
+  } catch (err) {
+    console.error('Tamem failed to start, everything else is unaffected:', err.message);
+  }
+} else {
+  console.log('Tamem skipped — no TAMEM_TOKEN in "Tamem/.env".');
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   if (!lock.isAllowed(interaction.guildId)) return;

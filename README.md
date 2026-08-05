@@ -12,6 +12,7 @@ No third-party bot, no paywall — everything runs in this process.
 | --- | --- |
 | `/profile [user]` | Coins, weekly rank, voice time, level — drawn on whatever card they bought. |
 | `/shop`, `/buy`, `/inventory`, `/balance`, `/request` | KALLEN, the shop. See **[Shop Bot/README.md](Shop%20Bot/README.md)**. |
+| `/tamem` | TAMEM, a Markov chat bot that learned to talk from this server. See **[Tamem/README.md](Tamem/README.md)**. |
 | `/quests` | Daily and weekly progress with bars. Pays out anything already finished. |
 | `/leaderboard [alltime]` | This week's top ten, or all-time totals. |
 | `/color` | Pick a name colour. Unlocks at level 20. Ephemeral, so it never clutters a channel. |
@@ -45,10 +46,17 @@ curve. Roles at 5 (Active Member), 10 (Regular), 20 (Enthusiast), 35 (Veteran),
 name colours and bot-playground, level 35 the Inner Circle voice channel.
 
 **Coins** are the weekly score and the only currency: 2 per message (max
-100/day), 5 per 10 minutes in voice, 1 per reaction received (max 20/day), 10
+400/day), 5 per 10 minutes in voice, 1 per reaction received (max 20/day), 10
 when a moderator reacts to your message, 30 when someone joins through your
 invite, plus quest rewards. Voice time has never been a separate currency — it
 pays into this same balance, which is why the shop has one price per item.
+
+**Tamem** is a Markov chain, not an AI — no API key and no bill. It learns which
+word follows which, then builds new sentences from those odds. It reads and
+answers **only members the owner has approved** by hand with `/tamem allow`;
+everyone else in the channel is invisible to it. Channels are opt-in on top of
+that, several are never read at all, and blocking a word removes it from the
+model retroactively.
 
 **The shop** is KALLEN (`/shop`). It sells no roles and nothing Discord alone
 can grant; Robux, Nitro and in-game items go through an approval queue that
