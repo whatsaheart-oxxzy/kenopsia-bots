@@ -4,9 +4,14 @@ node_modules/
 # `Virtual Pet/.env`, `Voice Bot/data/` and so on are covered too.
 .env
 .env.*
+# Tokens keep turning up in files named something else: .envt.txt once, and
+# Tamem.env.txt later, neither of which the rules above catch. These do. If you
+# save a token anywhere, give the file "env" in its name and it is covered.
+*.env
+*env*.txt
+*.env.*
 !.env.example
 !.env.deploy.example
-.envt.txt
 
 # Bot state: coins, levels, pets, voice time, Roblox links. Never committed —
 # the server's copy is the real one. See DEPLOY.md for backups.

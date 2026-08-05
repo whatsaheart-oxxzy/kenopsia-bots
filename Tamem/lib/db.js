@@ -35,8 +35,40 @@ function open() {
     );
   }
 
-  fs.mkdirSync(path.dirname(FILE), { recursive: true });
-  db = new DatabaseSync(FILE);
+  const dir = path.dirname(FILE);
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    /* it exists; whether we may write to it is the next check */
+  }
+
+  try {
+    db = new DatabaseSync(FILE);
+  } catch (err) {
+    // "unable to open database file" is SQLite's answer to almost every
+    // filesystem problem, and on its own it tells you nothing. In practice it
+    // is always the same thing: docker-compose bind-mounts ./Tamem/data, and
+    // when that folder does not exist on the host Docker creates it owned by
+    // root — while the container runs as 1000:1000 and cannot write into it.
+    // WAL mode needs to create -wal and -shm files next to the database, so
+    // read-only is not good enough either.
+    let detail;
+    try {
+      fs.accessSync(dir, fs.constants.W_OK);
+      detail = `${dir} is writable, so this is something else — check disk space with \`df -h\`.`;
+    } catch {
+      detail = [
+        `${dir} is not writable by this process (uid ${process.getuid?.() ?? '?'}).`,
+        'On the server that is the bind mount being owned by root. Fix it with:',
+        '',
+        '  cd ~/kenopsia-bots',
+        '  mkdir -p Tamem/data',
+        '  sudo chown -R 1000:1000 Tamem/data',
+        '  docker compose up -d',
+      ].join('\n');
+    }
+    throw new Error(`Tamem cannot open ${FILE}: ${err.message}\n${detail}`);
+  }
 
   // WAL survives an unclean stop far better than the default journal, which
   // matters when the whole container is restarted to update a different bot.
